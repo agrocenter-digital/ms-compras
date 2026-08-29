@@ -1,18 +1,27 @@
-# Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-WORKDIR /app
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+WORKDIR /workspace
 
-# Cache dependencies layer
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
+COPY pom.xml ./
+RUN mvn -q -DskipTests dependency:go-offline
 
-# Copy source and build
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn -q -DskipTests clean package
 
-# Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
+RUN addgroup -S agrocenter && adduser -S agrocenter -G agrocenter
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+COPY --from=build --chown=agrocenter:agrocenter /workspace/target/ms-compras-*.jar app.jar
+
+LABEL org.opencontainers.image.title="AgroCenter ms-compras" \
+      org.opencontainers.image.description="Microservicio de compras y reabastecimiento" \
+      org.opencontainers.image.vendor="AgroCenter"
+
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+
+USER agrocenter
+EXPOSE 8083
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8083/actuator/health || exit 1
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
