@@ -36,10 +36,12 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/compras", "/api/compras/**")
-                        .hasAnyAuthority("ROLE_ADMIN", "SCOPE_compras.write")
-                        .requestMatchers(HttpMethod.GET, "/api/compras", "/api/compras/**")
-                        .hasAnyAuthority(
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/compras", "/api/compras/**", "/compras", "/compras/**"
+                        ).hasAnyAuthority("ROLE_ADMIN", "SCOPE_compras.write")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/compras", "/api/compras/**", "/compras", "/compras/**"
+                        ).hasAnyAuthority(
                                 "ROLE_ADMIN",
                                 "SCOPE_compras.read",
                                 "SCOPE_compras.write"

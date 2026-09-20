@@ -29,7 +29,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping({"/api/compras", "/api/compras/"})
+@RequestMapping({"/api/compras", "/api/compras/", "/compras", "/compras/"})
 @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'SCOPE_compras.read', 'SCOPE_compras.write')")
 @Tag(name = "Compras", description = "Ordenes de compra y reabastecimiento")
 public class OrdenCompraController {
