@@ -6,20 +6,20 @@ Microservicio encargado de la gestión de órdenes de compra a proveedores y del
 
 ## 1. Arquitectura y Enrutamiento en AWS
 
-En la infraestructura de producción (AWS ECS Fargate):
+En la infraestructura de producción (EC2 Monolítica en subred pública de la VPC por defecto de AWS Academy):
 * **Puerto**: `8083`
-* **Target Group**: `tg-ms-compras` (Healthy)
-* **Router ALB Interno**: `internal-agrocenter-bff-alb:8080`
-* **Path-Based Routing**: Rutas `/api/compras/*` dirigidas al Target Group `tg-ms-compras`.
-* **Comunicación con Inventario**: Al confirmar una orden de compra, invoca a `ms-inventario` (`POST /api/inventario/stock/entrada`) con clave idempotente `COMPRA-<id>` para aumentar las existencias físicas.
+* **Red**: Docker bridge compartida (`agrocenter-network`).
+* **Comunicación Interna**: Resoluble por nombre de contenedor (`http://ms-compras:8083`).
+* **Comunicación con Inventario**: Al confirmar una orden de compra, invoca directamente a `ms-inventario` (`http://ms-inventario:8081/api/inventario/stock/incrementar` o `/entrada`) con clave idempotente `COMPRA-<id>` para aumentar las existencias físicas.
+* **Persistencia**: Conectado a su base de datos `db_compras` en PostgreSQL.
 
 ```text
-Frontend (Vercel) -> bff-web (8080)
+Frontend (Vercel) -> bff-web (Puerto 8080 en EC2)
                          |
-                         v (vía ALB interno: /api/compras/*)
+                         v (red Docker: http://ms-compras:8083)
                     ms-compras (Puerto 8083)
                          |---> db_compras (PostgreSQL)
-                         `---> ms-inventario (Puerto 8081 / entrada de stock)
+                         `---> ms-inventario (http://ms-inventario:8081 / entrada de stock)
 ```
 
 ---
