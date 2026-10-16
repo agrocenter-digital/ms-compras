@@ -2,12 +2,17 @@ package com.agrocenter.compras;
 
 import com.agrocenter.compras.config.InventoryProperties;
 import com.agrocenter.compras.config.JwtProperties;
+import com.agrocenter.compras.config.ReabastecimientoProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({InventoryProperties.class, JwtProperties.class})
+@EnableConfigurationProperties({
+        InventoryProperties.class,
+        JwtProperties.class,
+        ReabastecimientoProperties.class
+})
 public class MsComprasApplication {
 
     public static void main(String[] args) {
