@@ -37,6 +37,7 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/compras/admin/**", "/compras/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,
                                 "/api/compras", "/api/compras/**", "/compras", "/compras/**"
                         ).hasAnyAuthority("ROLE_ADMIN", "SCOPE_compras.write")
